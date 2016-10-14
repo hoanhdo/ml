@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from numpy import *
 import operator
 import os.path
+
 import matplotlib
 import matplotlib.pyplot as plt
+from numpy import *
 
 
 def createDataSet():
@@ -13,14 +14,26 @@ def createDataSet():
 
 
 def classify(inX, dataSet, labels, k):
+    """
+    Giải thuật : 
+    For every point in our dataset:
+    Lấy từng điểm trong dataSet
+        Tính khoảng cách giữa inX và điểm hiện tại
+        sắp xếp khoảng cách theo thứ tự tăng dần
+        Lấy k phần tử có khoảng cách gần nhất với inX
+        Tìm ra phân loại trong cách giữa các phần tử
+        Trả về kết quả phân loại như là dự báo cho phân loại inX
+    """
     # lấy ra số row của dataSet
     dataSetSize = shape(dataSet)[0]
-    # tính khoảng cách giữa intX và điểm hiện tại bằng cách "tính khoảng cách giữa 2 vector""
+
+    # tính khoảng cách giữa intX và điểm hiện tại bằng cách "tính khoảng cách giữa 2 vector
     # Tạo ra 1 ma trận 0 với số dòng và số cột bằng với ma trân dataSet
     # bằng cách lặp 1 ma trận [0 0] với số lần bằng kích thước của của dataSet
     # - 1
     diffMat = tile(inX, (dataSetSize, 1)) - dataSet
     sqDiffMat = diffMat**2  # ^2
+
     # axis= 0 là theo cột, =1 là theo hàng với mảng 2 chiều
     sqDistances = sum(sqDiffMat, axis=1)
     distances = sqDistances**0.5  # căn bậc 2
@@ -38,7 +51,6 @@ def classify(inX, dataSet, labels, k):
     # sort các item trong classCount theo thứ tự ngược lại
     sortedClassCount = sorted(classCount.iteritems(),
                               key=operator.itemgetter(1), reverse=True)
-
     # trả về label đầu tiên
     return sortedClassCount[0][0]
 
@@ -60,23 +72,50 @@ def file2matrix(filename):
 
 
 def autoNorm(dataSet):
-    print dataSet
+    """
+    Thực hiện chuẩn hóa dữ liệu đưa về giá trị từ 0->1
+    hoặc là -1 đến 1. Đê thực hiện được việc này cần áp dụng công thức
+    newValue = (oldValue-min)/(max-min)
+    """
     # lấy min value của dataSet với axis=0 thì lấy theo cột. Kết quả là 1
     # array gồm 1 dòng và số cột = số cột của dataSet
     minVals = amin(dataSet, axis=0)
-    print minVals
+
     # lấy max value của dataset với axis=0 là lây stheo cột. Kết quả là 1
     # array gồm 1 dòng và số cột = số cột của dataSet
     maxVals = amax(dataSet, axis=0)
-    print maxVals
     ranges = maxVals - minVals
-    print ranges
 
+    # Tạo ra 1 mảng 0 có cùng kích thùng với dataSet
     normDataSet = zeros(shape(dataSet))
+
+    # lấy ra số cột của dataSet
     m = shape(dataSet)[0]
+
+    # thực hiện phép trừ của dataSet với minVals
+    # để minVals có thể thực hiện được lặp lại minVals số lần = số cột của dataSet
     normDataSet = dataSet - tile(minVals, (m, 1))
+
+    # thực hiện phép tính chia trong công thức ở method trên để ra kết quả
     normDataSet = normDataSet / tile(ranges, (m, 1))
     return normDataSet, ranges, minVals
+
+
+def datingClassTest():
+    hoRatio = 0.10
+    datingDataMat, datingLabels = file2matrix(
+        '/u01/code/machine_learning/python2/data/datingTestSet2.txt')
+    normMat, ranges, minVals = autoNorm(datingDataMat)
+    m = normMat.shape[0]
+    numTestVecs = int(m * hoRatio)
+    errorCount = 0.0
+    for i in range(numTestVecs):
+        classifierResult = classify(normMat[i, :], normMat[
+                                     numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
+        print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i])
+        if (classifierResult != datingLabels[i]):
+            errorCount += 1.0
+    print "the total error rate is: %f" % (errorCount / float(numTestVecs))
 
 
 def main():
@@ -95,6 +134,7 @@ def main():
     # print minVals
 
     test = array([[1.0, 2], [3.0, 4.0], [5, 6], [7, 8.1]])
+    datingClassTest()
     # print test
     # print amin(test,axis=0)
 
