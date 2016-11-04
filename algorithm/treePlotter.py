@@ -22,8 +22,8 @@ def classify(inputTree, featLabels, testVec):
 
 
 def plotMidText(cntrPt, parentPT, txtString):
-    xMid = (parentPT[0] - cntrPt[0])/2.0 + cntrPt[0]
-    yMid = (parentPT[1] - cntrPt[1])/2.0 + cntrPt[1]
+    xMid = (parentPT[0] - cntrPt[0]) / 2.0 + cntrPt[0]
+    yMid = (parentPT[1] - cntrPt[1]) / 2.0 + cntrPt[1]
     createPlot.ax1.text(xMid, yMid, txtString)
 
 
@@ -31,26 +31,28 @@ def plotTree(myTree, partentPt, nodeTxt):
     numLeafs = getNumLeafs(myTree)
     getTreeDepth(myTree)
     firstStr = myTree.keys()[0]
-    cntrPt = (plotTree.xOff + (1.0 + float(numLeafs))/2.0/plotTree.totalW, plotTree.yOff)
+    cntrPt = (plotTree.xOff + (1.0 + float(numLeafs)) /
+              2.0 / plotTree.totalW, plotTree.yOff)
     plotMidText(cntrPt, partentPt, nodeTxt)
     plotNode(firstStr, cntrPt, partentPt, DECISION_NODE)
     secondDict = myTree[firstStr]
-    plotTree.yOff = plotTree.yOff - 1.0/plotTree.totalD
+    plotTree.yOff = plotTree.yOff - 1.0 / plotTree.totalD
     for key in secondDict.keys():
         if type(secondDict[key]).__name__ == 'dict':
             plotTree(secondDict[key], cntrPt, str(key))
         else:
-            plotTree.xOff = plotTree.xOff + 1.0/plotTree.totalW
-            plotNode(secondDict[key], (plotTree.xOff, plotTree.yOff), cntrPt, leafNode)
+            plotTree.xOff = plotTree.xOff + 1.0 / plotTree.totalW
+            plotNode(secondDict[key], (plotTree.xOff,
+                                       plotTree.yOff), cntrPt, leafNode)
             plotMidText((plotTree.xOff, plotTree.yOff), cntrPt, str(key))
-    plotTree.yOff = plotTree.yOff + 1.0/plotTree.totalD
+    plotTree.yOff = plotTree.yOff + 1.0 / plotTree.totalD
 
 
 def retrieveTree(i):
-    listOfTrees =[{'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}},
-    {'no surfacing': {0: 'no', 1: {'flippers': \
-    {0: {'head': {0: 'no', 1: 'yes'}}, 1: 'no'}}}}
-    ]
+    listOfTrees = [{'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}},
+                   {'no surfacing': {0: 'no', 1: {'flippers':
+                                                  {0: {'head': {0: 'no', 1: 'yes'}}, 1: 'no'}}}}
+                   ]
     return listOfTrees[i]
 
 
@@ -81,9 +83,9 @@ def getTreeDepth(myTree):
 
 
 def plotNode(nodeTxt, centerPT, parentPT, nodeType):
-    createPlot.ax1.annotate(nodeTxt, xy=parentPT, xycoords='axes fraction', xytext=centerPT, 
-    textcoords = 'axes fraction', va= "center", 
-    ha= "center", bbox= nodeType, arrowprops= arrow_args)
+    createPlot.ax1.annotate(nodeTxt, xy=parentPT, xycoords='axes fraction', xytext=centerPT,
+                            textcoords='axes fraction', va="center",
+                            ha="center", bbox=nodeType, arrowprops=arrow_args)
 
 
 def createPlot():
@@ -102,7 +104,7 @@ def createPlot_1(inTree):
     createPlot.ax1 = plt.subplot(111, frameon=False, **axprops)
     plotTree.totalW = float(getNumLeafs(inTree))
     plotTree.totalD = float(getTreeDepth(inTree))
-    plotTree.xOff = -0.5/plotTree.totalW
+    plotTree.xOff = -0.5 / plotTree.totalW
     plotTree.yOff = 1.0
     plotTree(inTree, (0.5, 1.0), '')
     plt.show()
@@ -110,10 +112,10 @@ def createPlot_1(inTree):
 
 def createDataSet():
     dataSet = [[1, 1, 'yes'],
-                [1, 1, 'yes'],
-                [1, 0, 'no'],
-                [0, 1, 'no'],
-                [0, 1, 'no']]
+               [1, 1, 'yes'],
+               [1, 0, 'no'],
+               [0, 1, 'no'],
+               [0, 1, 'no']]
     labels = ['no surfacing', 'flippers']
     return dataSet, labels
 
@@ -133,13 +135,13 @@ def grabTree(filename):
 
 def splitDataSet(dataSet, axis, value):
     """
-    split dataSet 
+    split dataSet
     """
     retDataSet = []
     for featVec in dataSet:
         if featVec[axis] == value:
             reducedFeatVec = featVec[:axis]
-            reducedFeatVec.extend(featVec[axis+1:])
+            reducedFeatVec.extend(featVec[axis + 1:])
             retDataSet.append(reducedFeatVec)
     return retDataSet
 
@@ -155,7 +157,7 @@ def chooseBestFeatureToSplit(dataSet):
         newEntropy = 0.0
         for value in uniqueVals:
             subDataSet = splitDataSet(dataSet, i, value)
-            prob = len(subDataSet)/float(len(dataSet))
+            prob = len(subDataSet) / float(len(dataSet))
             newEntropy += prob * calcShannonEnt(subDataSet)
         infoGain = baseEntropy - newEntropy
         if (infoGain > bestInfoGain):
@@ -168,7 +170,7 @@ def calcShannonEnt(dataSet):
     numEntried = len(dataSet)
     labelCounts = {}
 
-    # Tạo dict cho tất cả các class có thể 
+    # Tạo dict cho tất cả các class có thể
     for featVec in dataSet:
         currentLabel = featVec[-1]
         if currentLabel not in labelCounts.keys():
@@ -176,9 +178,10 @@ def calcShannonEnt(dataSet):
         labelCounts[currentLabel] += 1
     shannonEnt = 0.0
 
-    # Tính entropy bằng công thức : http://stackoverflow.com/questions/1859554/what-is-entropy-and-information-gain
+    # Tính entropy bằng công thức :
+    # http://stackoverflow.com/questions/1859554/what-is-entropy-and-information-gain
     for key in labelCounts:
-        prob = float(labelCounts[key])/numEntried
+        prob = float(labelCounts[key]) / numEntried
         shannonEnt -= prob * log(prob, 2)
     return shannonEnt
 
@@ -197,7 +200,8 @@ def createTree(dataSet, labels):
     uniqueVals = set(featValues)
     for value in uniqueVals:
         subLabels = labels[:]
-        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value), subLabels)
+        myTree[bestFeatLabel][value] = createTree(
+            splitDataSet(dataSet, bestFeat, value), subLabels)
     return myTree
 
 
@@ -212,8 +216,8 @@ def main():
     print classify(myTree, labels, [1, 0])
     print classify(myTree, labels, [1, 1])
 
-    storeTree(myTree, 'classifierStorage.txt')
-    print grabTree('classifierStorage.txt')
+    storeTree(myTree, '../data/classifierStorage.txt')
+    print grabTree('../data/classifierStorage.txt')
 
     fr = open('lenses.txt')
     lenses = [inst.strip().split('\t') for inst in fr.readlines()]
@@ -225,5 +229,3 @@ def main():
 if __name__ == '__main__':
     import sys
     sys.exit(int(main() or 0))
-
-

@@ -88,7 +88,7 @@ def autoNorm(dataSet):
 
     # Tạo ra 1 mảng 0 có cùng kích thùng với dataSet
     normDataSet = zeros(shape(dataSet))
-
+    
     # lấy ra số cột của dataSet
     m = shape(dataSet)[0]
 
@@ -111,7 +111,7 @@ def datingClassTest():
     errorCount = 0.0
     for i in range(numTestVecs):
         classifierResult = classify(normMat[i, :], normMat[
-                                     numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
+            numTestVecs:m, :], datingLabels[numTestVecs:m], 3)
         print "the classifier came back with: %d, the real answer is: %d" % (classifierResult, datingLabels[i])
         if (classifierResult != datingLabels[i]):
             errorCount += 1.0
